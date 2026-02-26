@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import os
 from sdet_orchestration_crew___mobile_automation_generator.crew import SdetOrchestrationCrewMobileAutomationGeneratorCrew
 
 # This main file is intended to be a way for your to run your
@@ -11,9 +12,27 @@ def run():
     """
     Run the crew.
     """
+    # 1. Provide a path to a sample CSV file
+    csv_path = "/Users/harsh/Downloads/test_cases.csv"
+    
+    # 2. Read the CSV content (fallback to dummy data if you haven't created the file yet)
+    if os.path.exists(csv_path):
+        with open(csv_path, 'r', encoding='utf-8') as file:
+            csv_content = file.read()
+    else:
+        print(f"Warning: {csv_path} not found. Using dummy data.")
+        csv_content = """Test Case ID,Description,Expected Result
+                        TC01,User launches app and clicks login,Navigated to Login Screen
+                        TC02,User enters valid credentials,Success Toast displayed and navigated to Home
+                        TC03,User enters invalid credentials,Error Toast displayed on Login Screen"""
+
+    # 3. Pass it to the Crew inputs
     inputs = {
-        'feature_name': 'sample_value'
+        'feature_name': 'Quiz & Polls on LiveStream',
+        'csv_content': csv_content
     }
+    
+    print("Starting Mobile Automation Generator Pipeline...")
     SdetOrchestrationCrewMobileAutomationGeneratorCrew().crew().kickoff(inputs=inputs)
 
 

@@ -1,11 +1,16 @@
 ---
 parse_test_cases_and_extract_screen_flow:
-  description: Read the provided test_cases.csv file for {feature_name} and parse
+  description: >
+    Read the provided test_cases.csv file for {feature_name} and parse
     the manual test cases. Extract the test case titles, detailed test steps, and
     expected results. Analyze the test steps to identify the logical mobile application
     screens involved in each test scenario. Group related test steps by the screens
     they interact with and create a logical flow mapping.
-  expected_output: 'A structured JSON object containing: 1) Parsed test cases with
+    FEATURE NAME: {feature_name}
+    CSV CONTENT:
+    {csv_content}
+  expected_output: >
+    'A structured JSON object containing: 1) Parsed test cases with
     titles, steps, and expected results, 2) Identified logical mobile screens for
     each test scenario, 3) Screen flow mapping showing the sequence of screens for
     each test case, 4) Atomic test actions grouped by screen. The JSON should be well-formatted

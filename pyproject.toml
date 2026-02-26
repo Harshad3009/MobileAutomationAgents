@@ -5,7 +5,8 @@ description = "sdet_orchestration_crew___mobile_automation_generator using crewA
 authors = [{ name = "Harshad Bodekar", email = "harshoo3009@gmail.com" }]
 requires-python = ">=3.10,<3.14"
 dependencies = [
-    "crewai[litellm,tools]==1.9.3",
+    "crewai[google-genai,litellm,tools]==1.9.3",
+    "google-generativeai>=0.8.6",
 ]
 
 [project.scripts]
