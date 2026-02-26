@@ -2,7 +2,7 @@
 name = "sdet_orchestration_crew___mobile_automation_generator"
 version = "0.1.0"
 description = "sdet_orchestration_crew___mobile_automation_generator using crewAI"
-authors = [{ name = "Your Name", email = "you@example.com" }]
+authors = [{ name = "Harshad Bodekar", email = "harshoo3009@gmail.com" }]
 requires-python = ">=3.10,<3.14"
 dependencies = [
     "crewai[litellm,tools]==1.9.3",
