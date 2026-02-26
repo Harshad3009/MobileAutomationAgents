@@ -9,7 +9,11 @@ from crewai_tools import (
 )
 
 
-
+llm = LLM(
+    model="gemini/gemini-2.5-flash",
+    temperature=0.7,
+    api_key=os.getenv("GEMINI_API_KEY")
+)
 
 
 @CrewBase
@@ -22,72 +26,40 @@ class SdetOrchestrationCrewMobileAutomationGeneratorCrew:
         
         return Agent(
             config=self.agents_config["product_owner_and_test_router"],
-            
-            
-            tools=[				FileReadTool()],
-            reasoning=False,
-            max_reasoning_attempts=None,
-            inject_date=True,
-            allow_delegation=False,
-            max_iter=25,
-            max_rpm=None,
-            
-            
-            max_execution_time=None,
-            llm=LLM(
-                model="openai/gpt-4o-mini",
-                temperature=0.7,
-            ),
-            
+            tools=[FileReadTool()],
+            llm=llm,
         )
     
     @agent
     def multimodal_vision_and_xml_analyzer(self) -> Agent:
         
         return Agent(
-            config=self.agents_config["multimodal_vision_and_xml_analyzer"],
-            
-            
-            tools=[				OCRTool(),
-				FileReadTool()],
+            config=self.agents_config["multimodal_vision_and_xml_analyzer"],            
+            tools=[OCRTool(), FileReadTool()],
             reasoning=False,
             max_reasoning_attempts=None,
             inject_date=True,
             allow_delegation=False,
             max_iter=25,
             max_rpm=None,
-            
-            
             max_execution_time=None,
-            llm=LLM(
-                model="openai/gpt-4o-mini",
-                temperature=0.7,
-            ),
-            
+            llm=llm,
         )
     
     @agent
     def page_object_model_pom_crafter(self) -> Agent:
         
         return Agent(
-            config=self.agents_config["page_object_model_pom_crafter"],
-            
-            
-            tools=[				FileReadTool()],
+            config=self.agents_config["page_object_model_pom_crafter"],            
+            tools=[FileReadTool()],
             reasoning=False,
             max_reasoning_attempts=None,
             inject_date=True,
             allow_delegation=False,
             max_iter=25,
             max_rpm=None,
-            
-            
             max_execution_time=None,
-            llm=LLM(
-                model="openai/gpt-4o-mini",
-                temperature=0.7,
-            ),
-            
+            llm=llm,
         )
     
     @agent
@@ -95,32 +67,22 @@ class SdetOrchestrationCrewMobileAutomationGeneratorCrew:
         
         return Agent(
             config=self.agents_config["pytest_automation_synthesizer"],
-            
-            
-            tools=[				FileReadTool()],
+            tools=[FileReadTool()],
             reasoning=False,
             max_reasoning_attempts=None,
             inject_date=True,
             allow_delegation=False,
             max_iter=25,
             max_rpm=None,
-            
-            
             max_execution_time=None,
-            llm=LLM(
-                model="openai/gpt-4o-mini",
-                temperature=0.7,
-            ),
-            
+            llm=llm,
         )
     
     @agent
     def lead_quality_assurance_reviewer(self) -> Agent:
         
         return Agent(
-            config=self.agents_config["lead_quality_assurance_reviewer"],
-            
-            
+            config=self.agents_config["lead_quality_assurance_reviewer"],            
             tools=[],
             reasoning=False,
             max_reasoning_attempts=None,
@@ -128,25 +90,15 @@ class SdetOrchestrationCrewMobileAutomationGeneratorCrew:
             allow_delegation=False,
             max_iter=25,
             max_rpm=None,
-            
-            
             max_execution_time=None,
-            llm=LLM(
-                model="openai/gpt-4o-mini",
-                temperature=0.7,
-            ),
-            
+            llm=llm,
         )
-    
-
     
     @task
     def parse_test_cases_and_extract_screen_flow(self) -> Task:
         return Task(
             config=self.tasks_config["parse_test_cases_and_extract_screen_flow"],
             markdown=False,
-            
-            
         )
     
     @task
@@ -154,8 +106,6 @@ class SdetOrchestrationCrewMobileAutomationGeneratorCrew:
         return Task(
             config=self.tasks_config["analyze_screenshots_and_generate_locators"],
             markdown=False,
-            
-            
         )
     
     @task
@@ -163,8 +113,6 @@ class SdetOrchestrationCrewMobileAutomationGeneratorCrew:
         return Task(
             config=self.tasks_config["generate_page_object_model_classes"],
             markdown=False,
-            
-            
         )
     
     @task
@@ -172,8 +120,6 @@ class SdetOrchestrationCrewMobileAutomationGeneratorCrew:
         return Task(
             config=self.tasks_config["write_pytest_test_scripts"],
             markdown=False,
-            
-            
         )
     
     @task
@@ -181,8 +127,6 @@ class SdetOrchestrationCrewMobileAutomationGeneratorCrew:
         return Task(
             config=self.tasks_config["review_and_finalize_code_quality"],
             markdown=False,
-            
-            
         )
     
 
@@ -194,7 +138,7 @@ class SdetOrchestrationCrewMobileAutomationGeneratorCrew:
             tasks=self.tasks,  # Automatically created by the @task decorator
             process=Process.sequential,
             verbose=True,
-            chat_llm=LLM(model="openai/gpt-4o-mini"),
+            chat_llm=llm,
         )
 
 
