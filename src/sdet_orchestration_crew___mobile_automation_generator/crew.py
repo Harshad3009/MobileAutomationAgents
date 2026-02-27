@@ -7,10 +7,17 @@ from crewai_tools import (
 	FileReadTool,
 	OCRTool
 )
+from .tools.locator_extractor_tool import LocatorExtractionTool
 
 
 llm = LLM(
-    model="gemini/gemini-2.5-flash",
+    model="gemini-2.5-flash",
+    temperature=0.7,
+    api_key=os.getenv("GEMINI_API_KEY")
+)
+
+llm_pro = LLM(
+    model="gemini-2.5-pro",
     temperature=0.7,
     api_key=os.getenv("GEMINI_API_KEY")
 )
@@ -35,14 +42,8 @@ class SdetOrchestrationCrewMobileAutomationGeneratorCrew:
         
         return Agent(
             config=self.agents_config["multimodal_vision_and_xml_analyzer"],            
-            tools=[OCRTool(), FileReadTool()],
-            reasoning=False,
-            max_reasoning_attempts=None,
-            inject_date=True,
-            allow_delegation=False,
-            max_iter=25,
-            max_rpm=None,
-            max_execution_time=None,
+            tools=[LocatorExtractionTool()],
+            verbose=True,
             llm=llm,
         )
     
