@@ -17,18 +17,19 @@ parse_test_cases_and_extract_screen_flow:
     and ready for the next agent to consume.'
   agent: product_owner_and_test_router
 analyze_screenshots_and_generate_locators:
-  description: Using the logical screens identified in the previous task, analyze
-    the corresponding Android/iOS screenshots and Appium XML dump files for {feature_name}.
-    Match visual elements from screenshots to XML structure elements. Extract robust,
-    cross-platform element locators that work for both Android (resource-id, className)
-    and iOS (accessibility-id, name) platforms. Focus on identifying the most stable
-    locators that will survive app updates.
-  expected_output: 'A comprehensive JSON dictionary where keys are logical element
+  description: >
+    Your task is to extract all locators for all UI states using your custom tool.
+    
+    1. Execute the `LocatorExtractionTool`. It requires no arguments. It will automatically scan the 'assets/screens' folder, process the files in parallel, and return a master JSON dictionary.
+    2. Review the returned master JSON dictionary.
+    3. Ensure the extracted locators cover the required elements identified by the Product Owner in the previous step.
+  expected_output: >
+    'The master comprehensive JSON dictionary containing all cross-platform locators where keys are logical element
     names (e.g., ''login_button'', ''username_field'', ''submit_button'') and values
     are cross-platform locator dictionaries in the format: {''android'': {''by'':
     ''id'', ''value'': ''resource_id''}, ''ios'': {''by'': ''accessibility_id'', ''value'':
     ''accessibility_identifier''}}. Include fallback locators where primary ones might
-    be unreliable.'
+    be unreliable.' Return ONLY valid JSON. Do not include markdown formatting blocks like ```json.
   agent: multimodal_vision_and_xml_analyzer
   context:
   - parse_test_cases_and_extract_screen_flow

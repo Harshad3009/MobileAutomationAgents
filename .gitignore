@@ -185,3 +185,7 @@ cython_debug/
 
 # Pytest
 .pytest_cache/
+
+# Assets
+assets/
+all_assets/

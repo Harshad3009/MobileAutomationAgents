@@ -16,23 +16,38 @@ product_owner_and_test_router:
   # llm: "gemini/gemini-2.5-flash" # Flash is great and fast for parsing data
   # temperature: 0.7
   max_iter: 3
-  max_rpm: 100
+  max_rpm: 15
   max_execution_time: 60
   allow_delegation: False
   reasoning: False
   # max_reasoning_attempts: None
   inject_date: True
 multimodal_vision_and_xml_analyzer:
-  role: Multimodal Vision and XML Analyzer
-  goal: Analyze pairs of Android/iOS screenshots and Appium XML dumps to extract robust,
+  role: >
+    Multimodal Vision and XML Analyzer
+  goal: >
+    Batch process application screenshots and android/ios Appium XML dumps to extract robust,
     cross-platform element locators for {feature_name}. Map visual elements from screenshots
     to XML structures and identify the most resilient locators (resource-id, accessibility-id)
     for both Android and iOS simultaneously.
-  backstory: You are an Appium expert with a hawk-eye for mobile UI structures. You
+  backstory: >
+    You are an Appium expert with a hawk-eye for mobile UI structures. You
     can look at a screenshot, map it to an XML dump, and identify the most resilient
     locators (resource-id, accessibility-id) for both Android and iOS simultaneously.
     Your expertise in mobile automation frameworks allows you to predict which locators
-    will be stable across app updates and device variations.
+    will be stable across app updates and device variations. You group raw assets logically 
+    and utilize parallel batch processing tools to extract locators efficiently without 
+    getting stuck in sequential loops.
+  # llm: "gemini/gemini-2.5-pro" # Pro is essential here for complex reasoning
+  # temperature: 0.1 # Low temperature for consistent locator extraction
+  max_iter: 5
+  max_rpm: 15
+  max_execution_time: 120
+  allow_delegation: False
+  reasoning: False
+  # max_reasoning_attempts: None
+  inject_date: True
+  # context_window: 100000
 page_object_model_pom_crafter:
   role: Page Object Model (POM) Crafter
   goal: Write robust, reusable Python Page Object classes using the generated locators
