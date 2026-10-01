@@ -34,46 +34,84 @@ analyze_screenshots_and_generate_locators:
   context:
   - parse_test_cases_and_extract_screen_flow
 generate_page_object_model_classes:
-  description: Using the cross-platform locator dictionary from the previous task
+  description: >
+    Using the cross-platform locator dictionary from the previous task
     and the existing framework context (base_page.py and utilities), write complete
-    Python Page Object Model classes for {feature_name}. Each screen identified in
-    the first task should have its own POM class. Ensure all classes inherit from
+    Python Page Object Model classes for {feature_name}. Ensure all classes inherit from
     the base page class, implement proper locator handling for cross-platform support,
     and include methods for all identified actions.
-  expected_output: 'Complete Python code strings for all required Page Object classes.
-    Each class should: 1) Inherit from base_page.py, 2) Define cross-platform locators
-    using the provided dictionary, 3) Include methods for all screen actions (click,
-    type, verify), 4) Handle both Android and iOS platforms elegantly, 5) Follow proper
-    naming conventions and documentation. Output should be ready-to-use Python code.'
+
+    You must create or update the Page Object Model (POM) for '{feature_name}'.
+    The target file you are responsible for is: `src/pages/{module_name}_page.py`
+    
+    CRITICAL FRAMEWORK CONTEXT:
+    Below is the source code of the existing framework base classes and utilities. 
+    Study how `AndroidBasePage`, `IOSBasePage`, and `BasePage` are structured. 
+    Study how methods like `click_element` or `wait_for_element` are called. 
+    DO NOT invent new click/type and other methods; use the ones inherited from the base pages!
+    
+    --- START FRAMEWORK CONTEXT ---
+    {framework_context_for_pom_generation}
+    --- END FRAMEWORK CONTEXT ---
+
+    Follow this STRICT autonomous workflow:
+    1. CHECK EXISTING CODE: Use the `ReadFrameworkFileTool` on `src/pages/{module_name}_page.py`. 
+       - If it exists, analyze the current code. You must UPDATE it by appending new locators and methods.
+         Do not delete existing functionality!
+       - If it does not exist, you will build it from scratch using the Reference POM as a style guide.
+    2. CHECK UTILITIES: Use the `ListDirectoryTool` on `src/utils` to see if there are helper files related
+       to the test logic (e.g., API calls, tokens). If you see a relevant utility, use `ReadFrameworkFileTool` to understand how to import and use it.
+    3. SYNTHESIZE: Write the complete, final Python code for `src/pages/{module_name}_page.py`. 
+       Ensure locators are dictionaries handling Android/iOS. Import the correct base pages. Define the 
+       locators at the top of the class as dictionaries (e.g., `self.login_btn = {"android": (AppiumBy.ID, "..."), 
+       "ios": (AppiumBy.ACCESSIBILITY_ID, "...")}`). Write action methods (e.g., `def click_login(self):`) 
+       utilizing the framework's inherited methods.
+    4. SAVE: Use the `FileWriterTool` to save the absolute final Python string to disk.
+  expected_output: >
+    A confirmation string detailing whether the file was newly created or successfully
+    updated, and that the FileWriterTool executed successfully.
   agent: page_object_model_pom_crafter
   context:
   - analyze_screenshots_and_generate_locators
 write_pytest_test_scripts:
-  description: Using the original test logic from the Product Owner and the generated
-    POM classes from the Automation Architect, write the final executable test_{feature_name}.py
-    Pytest script. The script should properly import framework fixtures (like conftest.py),
-    instantiate the generated page objects, orchestrate the test flows according to
-    the screen sequences, and include strict assertions based on the expected results
-    from the original test cases.
-  expected_output: 'A complete, executable test_{feature_name}.py Pytest script containing:
-    1) Proper imports and fixtures, 2) Test functions for each test case scenario,
-    3) Page object instantiation and method calls, 4) Assertions validating expected
-    outcomes, 5) Proper test setup and teardown, 6) Clear, descriptive test function
-    names and docstrings. The script should be immediately runnable with pytest command.'
+  description: >
+    You must create or update the Pytest script for the feature '{feature_name}'.
+    The target file you are responsible for is: `tests/test_{module_name}.py`
+    
+    You have the original test logic parsed by the Product Owner:
+    {csv_content}
+    
+    CRITICAL FRAMEWORK CONTEXT (Fixtures & Reference Test):
+    {framework_context_for_test_generation}
+    
+    Follow this STRICT autonomous workflow:
+    1. READ THE POM: Use `ReadFrameworkFileTool` to read the Page Object just created/updated by the POM crafter at `src/pages/{module_name}.py`. You MUST know the exact method names to call in your test.
+    2. CHECK EXISTING TEST FILE: Use `ReadFrameworkFileTool` on `tests/test_{module_name}.py`. 
+       - If it exists, analyze the current code. You must append the new test functions to the existing class/module. DO NOT delete existing tests!
+       - If it does not exist, build it from scratch using the Reference Test as a style guide.
+    3. SYNTHESIZE: Write the complete, executable test_{module_name}.py Pytest script containing:
+       1) Proper imports and fixtures, 2) Test functions for each test case scenario,
+       3) Page object instantiation and method calls, 4) Assertions validating expected
+       outcomes, 5) Proper test setup and teardown, 6) Clear, descriptive test function
+       names and docstrings. The script should be immediately runnable with pytest command.
+    4. SAVE: Use `FileWriterTool` to save the final code to `tests/test_{module_name}.py`.
+  expected_output: >
+    A confirmation string detailing whether the test file was newly created or updated, and that the 
+    FileWriterTool executed successfully.
   agent: pytest_automation_synthesizer
   context:
   - generate_page_object_model_classes
-review_and_finalize_code_quality:
-  description: Review all the Python code generated by the Automation Architect and
-    SDET Script Writer for {feature_name}. Check for SOLID principle violations, code
-    anti-patterns, and PEP8 compliance issues. Ensure Single Responsibility Principle
-    is followed (no assertions inside Page Objects), fix any formatting issues, remove
-    code duplication, and optimize the overall code structure for maintainability.
-  expected_output: 'Final, deployment-ready Python files with: 1) Clean, PEP8-compliant
-    formatting, 2) Fixed anti-patterns and SOLID principle violations, 3) Optimized
-    code structure, 4) Proper separation of concerns, 5) Comprehensive code comments
-    and docstrings, 6) Final validation that all code is production-ready. Provide
-    both the corrected POM classes and the final Pytest script files.'
-  agent: lead_quality_assurance_reviewer
-  context:
-  - write_pytest_test_scripts
+# review_and_finalize_code_quality:
+#   description: Review all the Python code generated by the Automation Architect and
+#     SDET Script Writer for {feature_name}. Check for SOLID principle violations, code
+#     anti-patterns, and PEP8 compliance issues. Ensure Single Responsibility Principle
+#     is followed (no assertions inside Page Objects), fix any formatting issues, remove
+#     code duplication, and optimize the overall code structure for maintainability.
+#   expected_output: 'Final, deployment-ready Python files with: 1) Clean, PEP8-compliant
+#     formatting, 2) Fixed anti-patterns and SOLID principle violations, 3) Optimized
+#     code structure, 4) Proper separation of concerns, 5) Comprehensive code comments
+#     and docstrings, 6) Final validation that all code is production-ready. Provide
+#     both the corrected POM classes and the final Pytest script files.'
+#   agent: lead_quality_assurance_reviewer
+#   context:
+#   - write_pytest_test_scripts

@@ -16,12 +16,13 @@ product_owner_and_test_router:
   # llm: "gemini/gemini-2.5-flash" # Flash is great and fast for parsing data
   # temperature: 0.7
   max_iter: 3
-  max_rpm: 15
-  max_execution_time: 60
+  max_rpm: 3
+  max_execution_time: 300
   allow_delegation: False
   reasoning: False
   # max_reasoning_attempts: None
   inject_date: True
+  verbose: True
 multimodal_vision_and_xml_analyzer:
   role: >
     Multimodal Vision and XML Analyzer
@@ -41,43 +42,74 @@ multimodal_vision_and_xml_analyzer:
   # llm: "gemini/gemini-2.5-pro" # Pro is essential here for complex reasoning
   # temperature: 0.1 # Low temperature for consistent locator extraction
   max_iter: 5
-  max_rpm: 15
-  max_execution_time: 120
+  max_rpm: 3
+  max_execution_time: 300
   allow_delegation: False
   reasoning: False
   # max_reasoning_attempts: None
   inject_date: True
+  verbose: True
   # context_window: 100000
 page_object_model_pom_crafter:
-  role: Page Object Model (POM) Crafter
-  goal: Write robust, reusable Python Page Object classes using the generated locators
-    and existing framework base classes for {feature_name}. Create clean POM classes
-    that inherit from base_page.py and utilize existing framework API utilities rather
-    than reinventing the wheel.
-  backstory: You are a strict Senior SDET architect with decades of experience in
+  role: >
+    Senior SDET Page Object Model (POM) Architect
+  goal: >
+    Write robust, reusable Python Page Object classes for {feature_name} using the 
+    generated locators and existing framework base classes and reference POM. Create clean POM classes
+    that inherit from base_page.py and other platform specific base classes and utilize 
+    existing framework utilities rather than reinventing the wheel.
+  backstory: >
+    You are a strict Senior SDET architect with decades of experience in
     test automation frameworks. You enforce the Page Object Model design pattern religiously
     and have mastered the art of writing maintainable, scalable automation code. You
     ensure all generated classes follow SOLID principles, inherit properly from framework
     base classes, and handle cross-platform locator dictionaries elegantly without
-    code duplication.
+    code duplication. You use Type Hints, Docstrings, and avoid hardcoding assertions 
+    inside POMs (assertions belong in tests).
+  # llm: "gemini/gemini-2.5-pro" # Pro is essential here for complex reasoning
+  # temperature: 0.1 # Low temperature for consistent locator extraction
+  max_iter: 5
+  max_rpm: 3
+  max_execution_time: 300
+  allow_delegation: False
+  reasoning: True
+  max_reasoning_attempts: 2
+  inject_date: True
+  verbose: True
+  # context_window: 100000
 pytest_automation_synthesizer:
-  role: Pytest Automation Synthesizer
-  goal: Write executable, clean Pytest scripts that orchestrate the Page Objects to
+  role: >
+    Pytest Automation Synthesizer
+  goal: >
+    Write executable, clean Pytest scripts that orchestrate the Page Objects to
     execute the test scenarios for {feature_name}. Create test functions with proper
     fixtures, robust assertions, and clear test logic that validates expected outcomes.
-  backstory: You are an expert Python QA Engineer who lives and breathes Pytest. You
+  backstory: >
+    You are an expert Python QA Engineer who lives and breathes Pytest. You
     are a master of using fixtures, writing clean test functions, and implementing
-    robust assertions based on expected outcomes. Your test scripts are known for
+    robust assertions based on expected outcomes. You always check for existing test files to 
+    append new tests rather than overwriting old ones. Your test scripts are known for
     their clarity, maintainability, and comprehensive coverage. You excel at translating
     business requirements into executable test code that provides meaningful feedback.
-lead_quality_assurance_reviewer:
-  role: Lead Quality Assurance Reviewer
-  goal: Review and format the generated Python code to ensure it adheres to SOLID
-    principles and framework standards for {feature_name}. Ensure Single Responsibility
-    Principle compliance and PEP8 formatting standards are met in the final deliverable.
-  backstory: You are the gatekeeper of the main branch and the guardian of code quality.
-    With an eagle eye for anti-patterns and years of experience in code reviews, you
-    ensure that every line of code meets the highest standards. You review code to
-    ensure the Single Responsibility Principle is followed (e.g., no assertions inside
-    Page Objects), that code formatting is PEP8 compliant, and that the overall architecture
-    is maintainable and scalable.
+  # llm: "gemini/gemini-2.5-pro" # Pro is essential here for complex reasoning
+  # temperature: 0.1 # Low temperature for definitive test code generation
+  max_iter: 5
+  max_rpm: 3
+  max_execution_time: 300
+  allow_delegation: False
+  reasoning: True
+  max_reasoning_attempts: 1
+  inject_date: True
+  verbose: True
+  # context_window: 100000
+# lead_quality_assurance_reviewer:
+#   role: Lead Quality Assurance Reviewer
+#   goal: Review and format the generated Python code to ensure it adheres to SOLID
+#     principles and framework standards for {feature_name}. Ensure Single Responsibility
+#     Principle compliance and PEP8 formatting standards are met in the final deliverable.
+#   backstory: You are the gatekeeper of the main branch and the guardian of code quality.
+#     With an eagle eye for anti-patterns and years of experience in code reviews, you
+#     ensure that every line of code meets the highest standards. You review code to
+#     ensure the Single Responsibility Principle is followed (e.g., no assertions inside
+#     Page Objects), that code formatting is PEP8 compliant, and that the overall architecture
+#     is maintainable and scalable.

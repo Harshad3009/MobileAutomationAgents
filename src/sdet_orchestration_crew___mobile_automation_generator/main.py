@@ -8,12 +8,20 @@ from sdet_orchestration_crew___mobile_automation_generator.crew import SdetOrche
 # Replace with inputs you want to test with, it will automatically
 # interpolate any tasks and agents information
 
+# Dynamically resolve the path to the Mobile Automation Repo
+# This goes up one level from the Agent repo, then into the Loco Mobile Automation repo
+AGENT_REPO_DIR = os.getcwd()
+FRAMEWORK_REPO_DIR = os.path.abspath(os.path.join(AGENT_REPO_DIR, "..", "Loco_Mobile_Automation"))
+
+# Set it so the tools can find it
+os.environ["FRAMEWORK_ROOT"] = FRAMEWORK_REPO_DIR
+
 def run():
     """
     Run the crew.
     """
-    # 1. Read CSV
-    csv_path = "assets/test_cases.csv" 
+    # 1. Read test cases from the test_cases.csv file and framework context from the framework files
+    csv_path = "assets/test_cases.csv"
     if os.path.exists(csv_path):
         with open(csv_path, 'r', encoding='utf-8') as file:
             csv_content = file.read()
@@ -21,6 +29,9 @@ def run():
         print(f"Warning: {csv_path} not found. Using dummy data.")
         csv_content = """Test Case ID,Description,Expected Result
                          TC01,User enters invalid credentials,Error Toast displayed on Login Screen"""
+
+    framework_context_for_pom_generation = load_framework_context_for_pom_generation()
+    framework_context_for_test_generation = load_framework_context_for_test_generation()
 
     # 2. Scan the assets/screens directory dynamically
     assets_dir = "assets/screens"
@@ -34,10 +45,15 @@ def run():
 
     # 3. Pass inputs to the Crew
     inputs = {
-        'feature_name': 'Quiz & Polls on LiveStream',
-        'csv_content': csv_content
+        'feature_name': 'Login',
+        'module_name': 'login',
+        'csv_content': csv_content,
+        'framework_context_for_pom_generation': framework_context_for_pom_generation,
+        'framework_context_for_test_generation': framework_context_for_test_generation
     }
     
+    print(f"\nTarget Framework Directory: {FRAMEWORK_REPO_DIR}")
+    print(f"\nSource Assets Directory: {assets_dir}")
     print("Starting Mobile Automation Generator Pipeline...")
     SdetOrchestrationCrewMobileAutomationGeneratorCrew().crew().kickoff(inputs=inputs)
 
@@ -77,6 +93,43 @@ def test():
 
     except Exception as e:
         raise Exception(f"An error occurred while testing the crew: {e}")
+
+def load_framework_context_for_pom_generation() -> str:
+    """Reads core base pages and ONE reference POM to inject into the LLM context."""
+    # We include base pages and one perfect reference POM to show the LLM how to write POMs
+    print("Loading Framework Context for Agent 3...")
+    pom_files = [
+        "src/pages/base_page.py",
+        "src/pages/android_base_page.py",
+        "src/pages/ios_base_page.py",
+        "src/pages/quiz_poll_page.py"  # One perfect reference POM
+    ]
+    pom_code = load_file_context(pom_files)
+    return pom_code
+
+def load_framework_context_for_test_generation() -> str:
+    """Reads conftest.py, ONE refeerence test file and the new POM to give the Synthesizer full context."""
+    print("Loading Test Context for Agent 4...")
+    files_to_read = [
+        "tests/conftest.py",
+        "tests/test_quiz_poll.py" # <--- The "Gold Standard" Reference
+    ]
+    
+    test_code = load_file_context(files_to_read)
+    return test_code
+
+def load_file_context(relative_file_paths) -> str:
+    """Reads framework files from the external Loco_Mobile_Automation repo."""
+    context = ""
+    for rel_path in relative_file_paths:
+        abs_path = os.path.join(FRAMEWORK_REPO_DIR, rel_path)
+        if os.path.exists(abs_path):
+            with open(abs_path, 'r', encoding='utf-8') as f:
+                context += f"\n\n### FILE: {rel_path} ###\n"
+                context += f.read()
+        else:
+            print(f"Context Warning: Could not find {abs_path}")
+    return context
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

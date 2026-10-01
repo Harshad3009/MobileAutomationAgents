@@ -8,16 +8,18 @@ from crewai_tools import (
 	OCRTool
 )
 from .tools.locator_extractor_tool import LocatorExtractionTool
+from .tools.file_writer_tool import FileWriterTool
+from .tools.framework_tools import ReadFrameworkFileTool, ListDirectoryTool
 
 
 llm = LLM(
-    model="gemini-2.5-flash",
+    model="gemini/gemini-2.5-flash",
     temperature=0.7,
     api_key=os.getenv("GEMINI_API_KEY")
 )
 
 llm_pro = LLM(
-    model="gemini-2.5-pro",
+    model="gemini/gemini-3-flash-preview",
     temperature=0.7,
     api_key=os.getenv("GEMINI_API_KEY")
 )
@@ -43,7 +45,6 @@ class SdetOrchestrationCrewMobileAutomationGeneratorCrew:
         return Agent(
             config=self.agents_config["multimodal_vision_and_xml_analyzer"],            
             tools=[LocatorExtractionTool()],
-            verbose=True,
             llm=llm,
         )
     
@@ -52,15 +53,8 @@ class SdetOrchestrationCrewMobileAutomationGeneratorCrew:
         
         return Agent(
             config=self.agents_config["page_object_model_pom_crafter"],            
-            tools=[FileReadTool()],
-            reasoning=False,
-            max_reasoning_attempts=None,
-            inject_date=True,
-            allow_delegation=False,
-            max_iter=25,
-            max_rpm=None,
-            max_execution_time=None,
-            llm=llm,
+            tools=[ReadFrameworkFileTool(), ListDirectoryTool(), FileWriterTool()],
+            llm=llm_pro,
         )
     
     @agent
@@ -68,32 +62,25 @@ class SdetOrchestrationCrewMobileAutomationGeneratorCrew:
         
         return Agent(
             config=self.agents_config["pytest_automation_synthesizer"],
-            tools=[FileReadTool()],
-            reasoning=False,
-            max_reasoning_attempts=None,
-            inject_date=True,
-            allow_delegation=False,
-            max_iter=25,
-            max_rpm=None,
-            max_execution_time=None,
-            llm=llm,
+            tools=[ReadFrameworkFileTool(), ListDirectoryTool(), FileWriterTool()],
+            llm=llm_pro,
         )
     
-    @agent
-    def lead_quality_assurance_reviewer(self) -> Agent:
+    # @agent
+    # def lead_quality_assurance_reviewer(self) -> Agent:
         
-        return Agent(
-            config=self.agents_config["lead_quality_assurance_reviewer"],            
-            tools=[],
-            reasoning=False,
-            max_reasoning_attempts=None,
-            inject_date=True,
-            allow_delegation=False,
-            max_iter=25,
-            max_rpm=None,
-            max_execution_time=None,
-            llm=llm,
-        )
+    #     return Agent(
+    #         config=self.agents_config["lead_quality_assurance_reviewer"],            
+    #         tools=[],
+    #         reasoning=False,
+    #         max_reasoning_attempts=None,
+    #         inject_date=True,
+    #         allow_delegation=False,
+    #         max_iter=25,
+    #         max_rpm=None,
+    #         max_execution_time=None,
+    #         llm=llm,
+    #     )
     
     @task
     def parse_test_cases_and_extract_screen_flow(self) -> Task:
@@ -123,12 +110,12 @@ class SdetOrchestrationCrewMobileAutomationGeneratorCrew:
             markdown=False,
         )
     
-    @task
-    def review_and_finalize_code_quality(self) -> Task:
-        return Task(
-            config=self.tasks_config["review_and_finalize_code_quality"],
-            markdown=False,
-        )
+    # @task
+    # def review_and_finalize_code_quality(self) -> Task:
+    #     return Task(
+    #         config=self.tasks_config["review_and_finalize_code_quality"],
+    #         markdown=False,
+    #     )
     
 
     @crew
